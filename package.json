@@ -1,0 +1,30 @@
+{
+  "name": "exp-manager-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --require dotenv/config app/server.js",
+    "start:dev": "nodemon --inspect --exec 'node -r dotenv/config' app/server.js",
+    "test": "npx jest --detectOpenHandles",
+    "lint": "npx eslint --fix app tests deploy-commands.js",
+    "deploy-commands": "node --require dotenv/config deploy-commands.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^2.2.0",
+    "db-migrate": "^0.11.13",
+    "db-migrate-pg": "^1.2.2",
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
+    "sequelize": "^6.28.0",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.33.0",
+    "eslint-config-google": "^0.14.0",
+    "jest": "^29.4.1"
+  }
+}
