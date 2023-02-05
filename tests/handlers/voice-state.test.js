@@ -47,7 +47,7 @@ describe('Test voice state update handler', () => {
         .toBe(undefined);
     const user = await models.User.findOne({where: {discordId: discordId1}});
     expect(user).not.toBeNull;
-    expect(user.onVoice).toBeFalsy;
+    expect(user.onVoice).toBeFalsy();
   });
 
   test('testUser1 leaves voice channel', async () => {
@@ -63,7 +63,7 @@ describe('Test voice state update handler', () => {
         .toBe(undefined);
     const user = await models.User.findOne({where: {discordId: discordId1}});
     expect(user).not.toBeNull;
-    expect(user.onVoice).toBeFalsy;
+    expect(user.onVoice).toBeFalsy();
   });
 });
 
