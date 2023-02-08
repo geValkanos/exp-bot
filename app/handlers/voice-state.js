@@ -14,11 +14,11 @@ const voiceStateUpdate = () => {
   return async (_oldState, newState) => {
     try {
       const user = await models.User.findOne({
-        where: {discordId: newState.id},
+        where: {id: newState.id, guildId: newState.guild.id},
       });
-
       if (user) {
-        user.onVoice = isOnActiveExpMode(user, newState);
+        user.voiceChannelId = newState.channelId;
+        user.isOnExpMode = isOnActiveExpMode(user, newState);
         await user.save();
       }
     } catch (error) {

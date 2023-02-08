@@ -2,30 +2,35 @@ const define = (database, types) => {
   const User = database.define('User', {
     // User ID.
     id: {
-      type: types.INTEGER,
-      autoIncrement: true,
+      type: types.BIGINT,
       primaryKey: true,
       field: 'id',
     },
-    // User's total exp number.
+    // Guild ID.
+    guildId: {
+      type: types.BIGINT,
+      primaryKey: true,
+      field: 'guild_id',
+    },
+    // User's total exp number in the guild.
     experience: {
       type: types.INTEGER,
-      field: 'experience',
       allowNull: false,
       defaultValue: 0,
+      field: 'experience',
     },
-    // The id user has on discord.
-    discordId: {
-      type: types.TEXT,
-      allowNull: false,
-      field: 'discord_id',
+    // The voice channel the user is in (if any)
+    voiceChannelId: {
+      type: types.BIGINT,
+      allowNull: true,
+      field: 'voice_channel_id',
     },
-    // If the user is on a voice channel
-    onVoice: {
+    // If the user is actively exp-ing.
+    isOnExpMode: {
       type: types.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: 'on_voice',
+      field: 'is_on_exp_mode',
     },
     // If the user is currently a member of the guild.
     isActive: {
@@ -34,12 +39,12 @@ const define = (database, types) => {
       defaultValue: true,
       field: 'is_active',
     },
-    // When the user was created.
+    // When the user, guild was created.
     createdAt: {
       type: types.DATE,
       field: 'created_at',
     },
-    // When the user was last updated.
+    // When the user,guild was last updated.
     updatedAt: {
       type: types.DATE,
       field: 'updated_at',
@@ -55,9 +60,13 @@ const define = (database, types) => {
   User.prototype.toJSON = function() {
     const values = Object.assign({ }, this.get());
     delete values.id;
-    delete values.discordId;
-    delete values.role;
+    delete values.guildId;
+    delete values.voiceChannelId;
     return values;
+  };
+
+  User.createAssociations = (models) => {
+    models.User.belongsTo(models.Guild, {foreignKey: 'guildId', target: 'id'});
   };
 
   return User;

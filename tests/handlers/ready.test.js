@@ -5,25 +5,28 @@ const models = require('../../app/models');
 describe('Test ready handler', () => {
   const discordId1 = '123456789';
   const discordId2 = '012345678';
+  const guildId1 = '12345';
+  const guildId2 = '23456';
 
   beforeEach(async () => {
-    // User on voice channel.
-    const testUser1 = new models.User({
-      discordId: discordId1, isActive: true, onVoice: false,
-    });
-    await testUser1.save();
-    const testUser2 = new models.User({
-      discordId: discordId2, isActive: true, onVoice: true,
-    });
-    await testUser2.save();
+    // Create guilds.
+    const testGuild1 = new models.Guild({id: guildId1});
+    await testGuild1.save();
+    const testGuild2 = new models.Guild({id: guildId2});
+    await testGuild2.save();
+
+    // Add users on guilds.
+    await (new models.User({guildId: guildId1, id: discordId1})).save();
+    await (new models.User({guildId: guildId2, id: discordId1})).save();
+    await (new models.User({guildId: guildId1, id: discordId2})).save();
   });
 
   afterEach(async () => {
-    await models.User.destroy({
-      where: {discordId: discordId1},
+    await models.Guild.destroy({
+      where: {id: guildId1},
     });
-    await models.User.destroy({
-      where: {discordId: discordId2},
+    await models.Guild.destroy({
+      where: {id: guildId2},
     });
   });
 
@@ -32,20 +35,42 @@ describe('Test ready handler', () => {
     mockedMembers.set(discordId1, {user: {id: discordId1}});
     const mockChannels = [{
       members: mockedMembers,
+      id: '9494',
     }, {
       members: new Collection(),
+      id: '9595',
     }];
-    const mockedGuilds = {
+    const mockedGuilds = new Collection();
+    mockedGuilds.set(guildId1, {
+      id: guildId1,
       channels: {cache: {filter: (fn) => mockChannels}},
-    };
+    });
+    mockedGuilds.set(guildId2, {
+      id: guildId2,
+      channels: {cache: {filter: (fn) => []}},
+    });
     const mockClient = {
       user: {tag: 'Test Bot Name'},
-      guilds: {cache: {get: (_arg) => mockedGuilds}},
+      guilds: {cache: mockedGuilds},
     };
     await ready(mockClient)();
-    const user1 = await models.User.findOne({where: {discordId: discordId1}});
-    const user2 = await models.User.findOne({where: {discordId: discordId2}});
-    expect(user1.onVoice).toBeTruthy();
-    expect(user2.onVoice).toBeFalsy();
+    // User1, Guild1
+    const user11 = await models.User.findOne({
+      where: {id: discordId1, guildId: guildId1},
+    });
+    expect(user11.voiceChannelId).toBe('9494');
+    expect(user11.isOnExpMode).toBeFalsy();
+
+    // User1, Guild2
+    const user12 = await models.User.findOne({
+      where: {id: discordId1, guildId: guildId2},
+    });
+    expect(user12.voiceChannelId).toBeNull();
+
+    // User2, Guild1
+    const user21 = await models.User.findOne({
+      where: {id: discordId2, guildId: guildId1},
+    });
+    expect(user21.voiceChannelId).toBeNull();
   });
 });
