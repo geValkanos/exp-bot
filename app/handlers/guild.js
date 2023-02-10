@@ -1,13 +1,14 @@
 const logger = require('../common/logger').getLogger('members-handler');
 const models = require('../models');
+const {setNewGuildConfig, deleteGuildConfig} = require('../config.js');
 
 const addGuild = () => {
   return async (guild) => {
     try {
-      // TODO: create config.json for the guild
       logger.info(`New guild ${guild.id} invites bot`);
-      const newGuild = new models.Guild({id: guildId});
+      const newGuild = new models.Guild({id: guild.id});
       await newGuild.save();
+      await setNewGuildConfig(guild.id);
     } catch (error) {
       logger.error(`Failed to add ${guild.id} with ${error}`);
     }
@@ -22,6 +23,7 @@ const removeGuild = () => {
       await models.Guild.destroy({
         where: {id: guild.id},
       });
+      await deleteGuildConfig();
     } catch (error) {
       logger.error(`Failed to remove ${guild.id} with ${error}`);
     }
@@ -32,7 +34,9 @@ const addMember = () => {
   return async (member) => {
     try {
       const user = await models.User.findOne({
-        id: member.user.id, guildId: member.guild.id,
+        where: {
+          id: member.user.id, guildId: member.guild.id,
+        },
       });
       if (!user) {
         logger.info(`User ${member.user.username} joins ${member.guild.id}`);
@@ -49,6 +53,7 @@ const addMember = () => {
     } catch (error) {
       // Handle error
       logger.error(`Member fails to join with: ${error}`);
+      throw error;
     }
   };
 };

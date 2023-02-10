@@ -1,11 +1,11 @@
 const models = require('../models');
 const logger = require('../common/logger.js').getLogger('voice-state-handler');
 const {isOnActiveExpMode} = require('../common/utils.js');
+const {config} = require('../config.js');
 
-const voiceStateUpdate = (loadedConfig) => {
+const voiceStateUpdate = () => {
   return async (_oldState, newState) => {
     try {
-      const config = (await loadedConfig).data;
       const expConditions = (
         config[newState.guild.id] || config.default
       ).expConditions;

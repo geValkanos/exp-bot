@@ -2,7 +2,7 @@ const {Collection} = require('discord.js');
 const logger = require('../common/logger.js').getLogger('command-execute');
 const {commands} = require('../commands');
 
-const commandExecute = (client, loadedConfig) => {
+const commandExecute = (client) => {
   client.commands = new Collection();
   for (command of commands) {
     client.commands.set(command.data.name, command);
@@ -12,12 +12,10 @@ const commandExecute = (client, loadedConfig) => {
     try {
       if (!interaction.isChatInputCommand()) return;
 
-      const config = await loadedConfig;
-
       logger.info(`Try to execute command ${interaction.commandName}`);
 
       const command = client.commands.get(interaction.commandName);
-      await command.execute(config)(interaction);
+      await command.execute()(interaction);
 
       logger.info(`Command ${interaction.commandName} successfully executed`);
     } catch (error) {

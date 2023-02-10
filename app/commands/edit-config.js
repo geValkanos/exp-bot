@@ -1,5 +1,6 @@
 const {SlashCommandBuilder} = require('discord.js');
 
+const {editExpConditions} = require('../config.js');
 const logger = require('../common/logger.js').getLogger(
     'exp-conditions-command',
 );
@@ -39,8 +40,58 @@ module.exports = {
                       {name: 'both', value: 2},
                   );
             });
+      })
+      .addSubcommand((subcommand) => {
+        return subcommand
+            .setName('server-mute')
+            .setDescription('How server mute affects exp earning')
+            .addIntegerOption((option) => {
+              return option
+                  .setName('value')
+                  .setDescription('Either `muted`, `not-muted`, `both`')
+                  .setRequired(true)
+                  .addChoices(
+                      {name: 'muted', value: 0},
+                      {name: 'not-muted', value: 1},
+                      {name: 'both', value: 2},
+                  );
+            });
+      })
+      .addSubcommand((subcommand) => {
+        return subcommand
+            .setName('server-deaf')
+            .setDescription('How server deaf affects exp earning')
+            .addIntegerOption((option) => {
+              return option
+                  .setName('value')
+                  .setDescription('Either `deaf`, `not-deaf`, `both`')
+                  .setRequired(true)
+                  .addChoices(
+                      {name: 'deaf', value: 0},
+                      {name: 'not-deaf', value: 1},
+                      {name: 'both', value: 2},
+                  );
+            });
+      })
+      .addSubcommand((subcommand) => {
+        return subcommand
+            .setName('suppress')
+            .setDescription('How suppress affects exp earning')
+            .addIntegerOption((option) => {
+              return option
+                  .setName('value')
+                  .setDescription(
+                      'Either `suppressed`, `not-suppressed`, `both`',
+                  )
+                  .setRequired(true)
+                  .addChoices(
+                      {name: 'suppressed', value: 0},
+                      {name: 'not-suppressed', value: 1},
+                      {name: 'both', value: 2},
+                  );
+            });
       }),
-  execute: (config) => {
+  execute: () => {
     return async (interaction) => {
       try {
         const newExpConditions = {};
@@ -69,7 +120,7 @@ module.exports = {
           case 'default':
             break;
         }
-        await config.editExpConditions(interaction.guildId, newExpConditions);
+        await editExpConditions(interaction.guildId, newExpConditions);
         await interaction.reply('Exp conditions updated successfully');
       } catch (error) {
         logger.error(`Failed to execute command info with ${error}`);

@@ -13,7 +13,7 @@ module.exports = {
             .setDescription('The member to give info')
             .setRequired(true);
       }),
-  execute: (_config) => {
+  execute: () => {
     return async (interaction) => {
       try {
         const discordUser = interaction.options.getUser('user');
