@@ -1,8 +1,8 @@
 const models = require('../models');
 const logger = require('../common/logger.js');
 
-const isOnActiveExpMode = (discordUser, state) => {
-  return discordUser.isActive &&
+const isOnActiveExpMode = (dbUser, state) => {
+  return dbUser.isActive &&
     !!state.channelId &&
     !state.serverDeaf &&
     !state.serverMute &&
@@ -20,6 +20,15 @@ const voiceStateUpdate = () => {
         user.voiceChannelId = newState.channelId;
         user.isOnExpMode = isOnActiveExpMode(user, newState);
         await user.save();
+      } else {
+        // Add the user first.
+        const newUser = new models.User({
+          id: newState.id,
+          guildId: newState.guild.id,
+          voiceChannelId: newState.channelId,
+        });
+        newUser.isOnExpMode = isOnActiveExpMode(newUser, newState);
+        await newUser.save();
       }
     } catch (error) {
       logger.error(`Failed to update voice state with ${error}`);

@@ -19,6 +19,8 @@ client.on('ready', handlers.ready(client));
 
 client.on(Events.VoiceStateUpdate, handlers.voiceStateUpdate());
 
+client.on(Events.GuildCreate, handlers.addGuild());
+client.on(Events.GuildDelete, handlers.removeGuild());
 client.on(Events.GuildMemberAdd, handlers.addMember());
 client.on(Events.GuildMemberRemove, handlers.removeMember());
 

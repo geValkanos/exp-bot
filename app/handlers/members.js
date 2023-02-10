@@ -1,6 +1,31 @@
 const logger = require('../common/logger').getLogger('members-handler');
 const models = require('../models');
 
+const addGuild = () => {
+  return async (guild) => {
+    try {
+      logger.info(`New guild ${guild.id} invites bot`);
+      const newGuild = new models.Guild({id: guildId});
+      await newGuild.save();
+    } catch (error) {
+      logger.error(`Failed to add ${guild.id} with ${error}`);
+    }
+  };
+};
+
+const removeGuild = () => {
+  return async (guild) => {
+    try {
+      logger.info(`Remove guild ${guild.id} invites bot`);
+      await models.Guild.destroy({
+        where: {id: guild.id},
+      });
+    } catch (error) {
+      logger.error(`Failed to remove ${guild.id} with ${error}`);
+    }
+  };
+};
+
 const addMember = () => {
   return async (member) => {
     try {
@@ -50,4 +75,6 @@ const removeMember = () => {
 module.exports = {
   addMember,
   removeMember,
+  addGuild,
+  removeGuild,
 };

@@ -4,7 +4,7 @@ const logger = require('./common/logger.js').getLogger('scheduler');
 const models = require('./models');
 
 const job = new CronJob(
-    '0 */2 * * * *',
+    '*/10 * * * * *',
     async () => {
       try {
         const guildsAndChannels = await models.User.findAll({
@@ -17,7 +17,7 @@ const job = new CronJob(
           group: ['guildId', 'voiceChannelId'],
         });
         for ({dataValues} of guildsAndChannels) {
-          if (dataValues.count >= 1) {
+          if (dataValues.count >= 2) {
             await models.User.update({
               experience: literal('experience + 1'),
             }, {
