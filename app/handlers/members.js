@@ -4,6 +4,7 @@ const models = require('../models');
 const addGuild = () => {
   return async (guild) => {
     try {
+      // TODO: create config.json for the guild
       logger.info(`New guild ${guild.id} invites bot`);
       const newGuild = new models.Guild({id: guildId});
       await newGuild.save();
@@ -16,6 +17,7 @@ const addGuild = () => {
 const removeGuild = () => {
   return async (guild) => {
     try {
+      // TODO: delete config.json for the guild
       logger.info(`Remove guild ${guild.id} invites bot`);
       await models.Guild.destroy({
         where: {id: guild.id},

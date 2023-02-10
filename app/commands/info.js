@@ -13,33 +13,37 @@ module.exports = {
             .setDescription('The member to give info')
             .setRequired(true);
       }),
-  execute: async (interaction) => {
-    try {
-      const discordUser = interaction.options.getUser('user');
-      console.log(discordUser);
-      if (discordUser.bot) throw Error('User is a bot');
+  execute: (_config) => {
+    return async (interaction) => {
+      try {
+        const discordUser = interaction.options.getUser('user');
 
-      const user = await models.User.findOne({
-        where: {discordId: discordUser.id},
-      });
+        if (discordUser.bot) throw Error('User is a bot');
 
-      if (!user) throw Error('User not in database');
+        const user = await models.User.findOne({
+          where: {id: discordUser.id, guildId: interaction.guildId},
+        });
 
-      const imageUrl = discordUser.avatar ||
-        `https://cdn.discordapp.com/embed/avatars/${discordUser.discriminator%5}.png`;
-
-      const response = new EmbedBuilder()
-          .setColor(0x0099FF)
-          .setAuthor({name: discordUser.username, iconURL: imageUrl})
-          .setThumbnail(imageUrl)
-          .setTitle('INFO')
-          .addFields({
-            name: 'Experience', value: `${user.experience}`,
-          });
-      await interaction.reply({embeds: [response]});
-    } catch (error) {
-      logger.error(`Failed to execute command info with ${error}`);
-      await interaction.reply('I have nothing to say!');
-    }
+        if (!user) throw Error('User not in database');
+        let imageUrl = '';
+        if (discordUser.avatar) {
+          imageUrl = `https://cdn.discordapp.com/avatars/${user.id}/${discordUser.avatar}`;
+        } else {
+          imageUrl = `https://cdn.discordapp.com/embed/avatars/${(discordUser.discriminator%5)}.png`;
+        }
+        const response = new EmbedBuilder()
+            .setColor(0x0099FF)
+            .setAuthor({name: discordUser.username, iconURL: imageUrl})
+            .setThumbnail(imageUrl)
+            .setTitle('INFO')
+            .addFields({
+              name: 'Experience', value: `${user.experience}`,
+            });
+        await interaction.reply({embeds: [response]});
+      } catch (error) {
+        logger.error(`Failed to execute command info with ${error}`);
+        await interaction.reply('I have nothing to say!');
+      }
+    };
   },
 };

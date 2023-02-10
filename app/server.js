@@ -4,6 +4,9 @@ require('./models');
 const handlers = require('./handlers');
 const scheduler = require('./scheduler.js');
 const logger = require('./common/logger.js').getLogger('server');
+const {loadConfig} = require('./config.js');
+
+const loadedConfig = loadConfig();
 
 const client = new Client({
   intents: [
@@ -15,16 +18,18 @@ const client = new Client({
   ],
 });
 
-client.on('ready', handlers.ready(client));
+client.on('ready', handlers.ready());
 
-client.on(Events.VoiceStateUpdate, handlers.voiceStateUpdate());
+client.on(Events.VoiceStateUpdate, handlers.voiceStateUpdate(loadedConfig));
 
 client.on(Events.GuildCreate, handlers.addGuild());
 client.on(Events.GuildDelete, handlers.removeGuild());
 client.on(Events.GuildMemberAdd, handlers.addMember());
 client.on(Events.GuildMemberRemove, handlers.removeMember());
 
-client.on(Events.InteractionCreate, handlers.commandExecute(client));
+client.on(
+    Events.InteractionCreate, handlers.commandExecute(client, loadedConfig),
+);
 
 client.login(process.env.TOKEN);
 

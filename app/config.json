@@ -1,0 +1,22 @@
+{
+  "default": {
+    "expConditions": {
+      "selfMute": 1,
+      "selfDeaf": 1,
+      "serverMute": 1,
+      "serverDeaf": 1,
+      "suppres": 1,
+      "minimumUsersInChannel": 2
+    }
+  },
+  "764530013932355594": {
+    "expConditions": {
+      "selfMute": 2,
+      "selfDeaf": 1,
+      "serverMute": 1,
+      "serverDeaf": 1,
+      "suppres": 1,
+      "minimumUsersInChannel": 2
+    }
+  }
+}

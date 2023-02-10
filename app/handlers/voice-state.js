@@ -1,24 +1,20 @@
 const models = require('../models');
-const logger = require('../common/logger.js');
+const logger = require('../common/logger.js').getLogger('voice-state-handler');
+const {isOnActiveExpMode} = require('../common/utils.js');
 
-const isOnActiveExpMode = (dbUser, state) => {
-  return dbUser.isActive &&
-    !!state.channelId &&
-    !state.serverDeaf &&
-    !state.serverMute &&
-    !state.selfMute &&
-    !state.selfDeaf;
-};
-
-const voiceStateUpdate = () => {
+const voiceStateUpdate = (loadedConfig) => {
   return async (_oldState, newState) => {
     try {
+      const config = (await loadedConfig).data;
+      const expConditions = (
+        config[newState.guild.id] || config.default
+      ).expConditions;
       const user = await models.User.findOne({
         where: {id: newState.id, guildId: newState.guild.id},
       });
       if (user) {
         user.voiceChannelId = newState.channelId;
-        user.isOnExpMode = isOnActiveExpMode(user, newState);
+        user.isOnExpMode = isOnActiveExpMode(user, newState, expConditions);
         await user.save();
       } else {
         // Add the user first.
@@ -27,7 +23,11 @@ const voiceStateUpdate = () => {
           guildId: newState.guild.id,
           voiceChannelId: newState.channelId,
         });
-        newUser.isOnExpMode = isOnActiveExpMode(newUser, newState);
+        newUser.isOnExpMode = isOnActiveExpMode(
+            newUser,
+            newState,
+            expConditions,
+        );
         await newUser.save();
       }
     } catch (error) {
