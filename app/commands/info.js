@@ -32,22 +32,37 @@ module.exports = {
 
         const user = await models.User.findOne({
           where: {id: discordUser.id, guildId: interaction.guildId},
+          include: [{model: models.Guild, required: true}],
         });
 
         if (!user) throw Error('User not in database');
+        const expToRolesMapping = user.guild.expToRolesMapping;
+        console.log(user.guild);
+        let userTier = Object.keys(expToRolesMapping);
+        userTier = userTier.filter(
+            (key) => expToRolesMapping[key] > user.experience,
+        ).reduce(
+            (acc, key) =>
+              expToRolesMapping[key] > expToRolesMapping[acc] && acc || key,
+            userTier[0],
+        );
+
         let imageUrl = '';
         if (discordUser.avatar) {
           imageUrl = `https://cdn.discordapp.com/avatars/${user.id}/${discordUser.avatar}`;
         } else {
           imageUrl = `https://cdn.discordapp.com/embed/avatars/${(discordUser.discriminator%5)}.png`;
         }
+
         const response = new EmbedBuilder()
             .setTitle('INFO')
             .setColor(0x0099FF)
             .setAuthor({name: discordUser.username, iconURL: imageUrl})
             .setThumbnail(imageUrl)
             .addFields({
-              name: 'Experience', value: `${user.experience}`, inline: false,
+              name: 'Tier', value: `${userTier}`, inline: true,
+            }, {
+              name: 'Experience', value: `${user.experience}`, inline: true,
             })
             .addFields({
               name: 'Roles', value: userRoles, inline: false,

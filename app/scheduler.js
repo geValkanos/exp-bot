@@ -4,7 +4,7 @@ const logger = require('./common/logger.js').getLogger('scheduler');
 const models = require('./models');
 
 const job = new CronJob(
-    '*/10 * * * * *',
+    '0 * * * * *',
     async () => {
       try {
         const guildsAndChannels = await models.User.findAll({

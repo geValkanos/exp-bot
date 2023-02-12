@@ -1,14 +1,17 @@
 const logger = require('../common/logger').getLogger('members-handler');
 const models = require('../models');
-const {setNewGuildConfig, deleteGuildConfig} = require('../config.js');
+const {defaultConfig} = require('../config.js');
 
 const addGuild = () => {
   return async (guild) => {
     try {
       logger.info(`New guild ${guild.id} invites bot`);
-      const newGuild = new models.Guild({id: guild.id});
+      const newGuild = new models.Guild({
+        id: guild.id,
+        expConditions: defaultConfig.default.expConditions,
+        expToRolesMapping: defaultConfig.default.expToRolesMapping,
+      });
       await newGuild.save();
-      await setNewGuildConfig(guild.id);
     } catch (error) {
       logger.error(`Failed to add ${guild.id} with ${error}`);
     }
@@ -23,7 +26,6 @@ const removeGuild = () => {
       await models.Guild.destroy({
         where: {id: guild.id},
       });
-      await deleteGuildConfig(guild.id);
     } catch (error) {
       logger.error(`Failed to remove ${guild.id} with ${error}`);
     }

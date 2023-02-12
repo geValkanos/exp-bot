@@ -6,6 +6,16 @@ const define = (database, types) => {
       primaryKey: true,
       field: 'id',
     },
+    expConditions: {
+      type: types.JSONB,
+      allowNull: false,
+      field: 'exp_conditions',
+    },
+    expToRolesMapping: {
+      type: types.JSONB,
+      allowNull: false,
+      field: 'exp_to_roles_mapping',
+    },
     // When the guild was created.
     createdAt: {
       type: types.DATE,
@@ -23,12 +33,6 @@ const define = (database, types) => {
     },
     tableName: 'guilds',
   });
-
-  Guild.prototype.toJSON = function() {
-    const values = Object.assign({ }, this.get());
-    delete values.id;
-    return values;
-  };
 
   Guild.createAssociations = (models) => {
     models.Guild.hasMany(models.User, {foreignKey: 'guildId', sourceKey: 'id'});

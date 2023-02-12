@@ -57,14 +57,6 @@ const define = (database, types) => {
     tableName: 'users',
   });
 
-  User.prototype.toJSON = function() {
-    const values = Object.assign({ }, this.get());
-    delete values.id;
-    delete values.guildId;
-    delete values.voiceChannelId;
-    return values;
-  };
-
   User.createAssociations = (models) => {
     models.User.belongsTo(models.Guild, {foreignKey: 'guildId', target: 'id'});
   };

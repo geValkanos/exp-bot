@@ -1,5 +1,7 @@
 CREATE TABLE guilds (
     "id" BIGINT NOT NULL,
+    "exp_conditions" JSONB NOT NULL,
+    "exp_to_roles_mapping" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT timezone('utc'::text, now()) NOT NULL,
     "updated_at" TIMESTAMP(3) DEFAULT timezone('utc'::text, now()) NOT NULL
 ) WITH (OIDS = FALSE);
