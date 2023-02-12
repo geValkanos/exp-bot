@@ -4,8 +4,8 @@ Gaming in the past was quite different from what it is today. Back then, we woul
 
 
 ## Table of Content
-- [Features](#section-1)
-- [Commands for local development](#section-2)
+- [Features](#features)
+- [Commands for local development](#commands-for-local-development)
 
 ## Features
 The basic functionality allows for players to earn 1 experience point (exp) every minute when at least two people are in the same channel. This typically indicates that they are playing a game or engaging in a discussion together. Players have access to various slash commands that allow them to modify the exp conditions and receive information about their leveling progress.
