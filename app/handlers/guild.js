@@ -23,7 +23,7 @@ const removeGuild = () => {
       await models.Guild.destroy({
         where: {id: guild.id},
       });
-      await deleteGuildConfig();
+      await deleteGuildConfig(guild.id);
     } catch (error) {
       logger.error(`Failed to remove ${guild.id} with ${error}`);
     }

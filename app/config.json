@@ -1,14 +1,4 @@
 {
-  "12345": {
-    "expConditions": {
-      "selfMute": 1,
-      "selfDeaf": 1,
-      "serverMute": 1,
-      "serverDeaf": 1,
-      "suppres": 1,
-      "minimumUsersInChannel": 2
-    }
-  },
   "default": {
     "expConditions": {
       "selfMute": 1,

@@ -3,6 +3,7 @@ const {commands}= require('./app/commands');
 const logger = require('./app/common/logger.js').getLogger('deploy-commands');
 const commandsToJson = [];
 
+
 for (const command of commands) {
   commandsToJson.push(command.data.toJSON());
 }

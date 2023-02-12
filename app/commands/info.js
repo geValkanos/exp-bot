@@ -1,6 +1,7 @@
-const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const {SlashCommandBuilder, EmbedBuilder, roleMention} = require('discord.js');
 
 const logger = require('../common/logger.js').getLogger('info-command');
+const {getGuildRoles, getGuildMember} = require('../common/discord-api.js');
 const models = require('../models');
 
 module.exports = {
@@ -17,8 +18,17 @@ module.exports = {
     return async (interaction) => {
       try {
         const discordUser = interaction.options.getUser('user');
-
         if (discordUser.bot) throw Error('User is a bot');
+
+        const member = await getGuildMember(
+            interaction.guildId, discordUser.id,
+        );
+
+        const userRoles = (await getGuildRoles(interaction.guildId)).filter(
+            (role) => member.roles.includes(role.id),
+        ).map((role) => {
+          return roleMention(role.id);
+        }).toString();
 
         const user = await models.User.findOne({
           where: {id: discordUser.id, guildId: interaction.guildId},
@@ -32,12 +42,15 @@ module.exports = {
           imageUrl = `https://cdn.discordapp.com/embed/avatars/${(discordUser.discriminator%5)}.png`;
         }
         const response = new EmbedBuilder()
+            .setTitle('INFO')
             .setColor(0x0099FF)
             .setAuthor({name: discordUser.username, iconURL: imageUrl})
             .setThumbnail(imageUrl)
-            .setTitle('INFO')
             .addFields({
-              name: 'Experience', value: `${user.experience}`,
+              name: 'Experience', value: `${user.experience}`, inline: false,
+            })
+            .addFields({
+              name: 'Roles', value: userRoles, inline: false,
             });
         await interaction.reply({embeds: [response]});
       } catch (error) {
