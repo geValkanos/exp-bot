@@ -1,0 +1,30 @@
+name: XpBot
+
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Install nodeenv
+        run: sudo apt-get -y install nodeenv
+
+      - name: Install dependencies
+        run: make env
+
+      - name: Set environement
+        run: export $(grep -v '^#' .env.testing | xargs)
+
+      - name: Create .env
+        run: cp .env.testing .env
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Run tests
+        run: make tests
