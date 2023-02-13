@@ -10,7 +10,7 @@ const voiceStateUpdate = () => {
         where: {id: newState.guild.id},
       });
       if (!guild) throw new Error(`Guild ${newState.guild.id} not found`);
-      console.log(guild);
+
       // Find the user in the guild, and change its voice status.
       const user = await models.User.findOne({
         where: {id: newState.id, guildId: newState.guild.id},

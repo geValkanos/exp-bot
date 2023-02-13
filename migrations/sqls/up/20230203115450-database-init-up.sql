@@ -1,7 +1,15 @@
 CREATE TABLE guilds (
     "id" BIGINT NOT NULL,
     "exp_conditions" JSONB NOT NULL,
-    "exp_to_roles_mapping" JSONB NOT NULL,
+    "created_at" TIMESTAMP(3) DEFAULT timezone('utc'::text, now()) NOT NULL,
+    "updated_at" TIMESTAMP(3) DEFAULT timezone('utc'::text, now()) NOT NULL
+) WITH (OIDS = FALSE);
+
+CREATE TABLE tiers (
+    "id" BIGINT NOT NULL,
+    "guild_id" BIGINT NOT NULL,
+    "experience" BIGINT NOT NULL,
+    "color" INT NOT NULL,
     "created_at" TIMESTAMP(3) DEFAULT timezone('utc'::text, now()) NOT NULL,
     "updated_at" TIMESTAMP(3) DEFAULT timezone('utc'::text, now()) NOT NULL
 ) WITH (OIDS = FALSE);
@@ -19,5 +27,7 @@ CREATE TABLE users (
 
 ALTER TABLE "users" ADD PRIMARY KEY ("id", "guild_id");
 ALTER TABLE "guilds" ADD PRIMARY KEY ("id");
+ALTER TABLE "tiers" ADD PRIMARY KEY ("id");
 
 ALTER TABLE "users" ADD FOREIGN KEY ("guild_id") REFERENCES "guilds" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "tiers" ADD FOREIGN KEY ("guild_id") REFERENCES "guilds" ("id") ON DELETE CASCADE ON UPDATE CASCADE;

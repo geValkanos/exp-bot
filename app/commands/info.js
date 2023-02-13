@@ -37,7 +37,7 @@ module.exports = {
 
         if (!user) throw Error('User not in database');
         const expToRolesMapping = user.guild.expToRolesMapping;
-        console.log(user.guild);
+
         let userTier = Object.keys(expToRolesMapping);
         userTier = userTier.filter(
             (key) => expToRolesMapping[key] > user.experience,

@@ -19,7 +19,6 @@ class TestGuild {
     const testGuild1 = new models.Guild({
       id: this.id,
       expConditions: defaultConfig.default.expConditions,
-      expToRolesMapping: defaultConfig.default.expToRolesMapping,
     });
     await testGuild1.save();
   };

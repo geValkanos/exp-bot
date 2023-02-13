@@ -1,17 +1,39 @@
 const logger = require('../common/logger').getLogger('members-handler');
 const models = require('../models');
-const {defaultConfig} = require('../config.js');
+const {
+  expToRolesMapping, expConditions,
+} = require('../config.js').defaultConfig.default;
+const {createGuildRole} = require('../common/discord-api.js');
 
 const addGuild = () => {
   return async (guild) => {
     try {
       logger.info(`New guild ${guild.id} invites bot`);
-      const newGuild = new models.Guild({
+
+      // Create the tier roles.
+      const guildTiers = [];
+      for (
+        const [roleName, values] of Object.entries(expToRolesMapping)
+      ) {
+        const r = await createGuildRole(
+            guild.id,
+            {name: roleName, color: values.color},
+        );
+        guildTiers.push({
+          id: r.id,
+          color: values.color,
+          experience: values.experience,
+        });
+      }
+
+      // Add the guild to database.
+      await models.Guild.create({
         id: guild.id,
-        expConditions: defaultConfig.default.expConditions,
-        expToRolesMapping: defaultConfig.default.expToRolesMapping,
+        expConditions: expConditions,
+        tiers: guildTiers,
+      }, {
+        include: [models.Tier],
       });
-      await newGuild.save();
     } catch (error) {
       logger.error(`Failed to add ${guild.id} with ${error}`);
     }

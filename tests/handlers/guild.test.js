@@ -1,7 +1,19 @@
+// Mock call to discord-api.
+jest.mock('../../app/common/discord-api.js', () => {
+  let _id = 42;
+  return {
+    _esModule: true,
+    createGuildRole: (_g, _r) => {
+      _id += 1;
+      return {id: _id};
+    },
+  };
+});
+
+const models = require('../../app/models');
 const {
   addMember, removeMember, addGuild, removeGuild,
 } = require('../../app/handlers');
-const models = require('../../app/models');
 const {TestGuild} = require('../test-utils');
 
 describe('Test join/remove member to server', () => {
