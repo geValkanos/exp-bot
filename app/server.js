@@ -29,6 +29,9 @@ client.on(
     Events.InteractionCreate, handlers.commandExecute(client),
 );
 
+client.on(Events.GuildRoleDelete, handlers.roleDelete());
+client.on(Events.GuildRoleUpdate, handlers.roleUpdate());
+
 client.login(process.env.TOKEN);
 
 scheduler.start();

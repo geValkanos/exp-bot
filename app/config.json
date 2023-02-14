@@ -5,16 +5,30 @@
       "selfDeaf": 1,
       "serverMute": 1,
       "serverDeaf": 1,
-      "suppres": 1,
+      "suppress": 1,
       "minimumUsersInChannel": 2
     },
     "expToRolesMapping": {
-      "Tier 1": 1000,
-      "Tier 2": 2000,
-      "Tier 3": 5000,
-      "Tier 4": 10000,
-      "Tier 5": 20000,
-      "Tier 6": 50000
+      "Tier 1": {
+        "experience": 1000,
+        "color": 5763719
+      },
+      "Tier 2": {
+        "experience": 2000,
+        "color": 3447003
+      },
+      "Tier 3": {
+        "experience": 5000,
+        "color": 15844367
+      },
+      "Tier 4": {
+        "experience": 10000,
+        "color": 15548997
+      },
+      "Tier 5": {
+        "experience": 20000,
+        "color": 10181046
+      }
     }
   }
 }

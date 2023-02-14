@@ -2,8 +2,10 @@ const {voiceStateUpdate} = require('../../app/handlers');
 const {TestGuild, TestUser} = require('../test-utils');
 
 describe('Test voice state update handler', () => {
-  const testUser1 = new TestUser('123456789', '12345');
-  const testGuild1 = new TestGuild('12345');
+  const guildId = '12345';
+  const userId = '123456789';
+  const testUser1 = new TestUser(userId, guildId);
+  const testGuild1 = new TestGuild(guildId);
 
   beforeEach(async () => {
     await testGuild1.create();
@@ -19,8 +21,8 @@ describe('Test voice state update handler', () => {
 
   test('testUser1 enters voice channel', async () => {
     await expect(voiceStateUpdate()({}, {
-      id: testUser1.id,
-      guild: {id: testGuild1.id},
+      id: userId,
+      guild: {id: guildId},
       channelId: '123',
       selfMute: false,
       selfDeaf: false,
@@ -31,14 +33,14 @@ describe('Test voice state update handler', () => {
         .toBe(undefined);
     const user = await testUser1.get();
 
-    expect(user).not.toBeNull;
-    expect(user.onVoice).toBeTruthy;
+    expect(user).not.toBeNull();
+    expect(user.voiceChannelId).toBe('123');
   });
 
   test('testUser1 mutes voice channel', async () => {
     await expect(voiceStateUpdate()({}, {
-      id: testUser1.id,
-      guild: {id: testGuild1.id},
+      id: userId,
+      guild: {id: guildId},
       channelId: '123',
       selfMute: true,
       selfDeaf: false,
@@ -49,14 +51,14 @@ describe('Test voice state update handler', () => {
         .toBe(undefined);
 
     const user = await testUser1.get();
-    expect(user).not.toBeNull;
-    expect(user.onVoice).toBeFalsy();
+    expect(user).not.toBeNull();
+    expect(user.voiceChannelId).toBe('123');
   });
 
   test('testUser1 leaves voice channel', async () => {
     await expect(voiceStateUpdate()({}, {
-      id: testUser1.id,
-      guild: {id: testGuild1.id},
+      id: userId,
+      guild: {id: guildId},
       channelId: null,
       selfMute: false,
       selfDeaf: false,
@@ -67,8 +69,8 @@ describe('Test voice state update handler', () => {
         .toBe(undefined);
 
     const user = await testUser1.get();
-    expect(user).not.toBeNull;
-    expect(user.onVoice).toBeFalsy();
+    expect(user).not.toBeNull();
+    expect(user.voiceChannelId).toBeNull();
   });
 });
 

@@ -11,11 +11,6 @@ const define = (database, types) => {
       allowNull: false,
       field: 'exp_conditions',
     },
-    expToRolesMapping: {
-      type: types.JSONB,
-      allowNull: false,
-      field: 'exp_to_roles_mapping',
-    },
     // When the guild was created.
     createdAt: {
       type: types.DATE,
@@ -36,6 +31,7 @@ const define = (database, types) => {
 
   Guild.createAssociations = (models) => {
     models.Guild.hasMany(models.User, {foreignKey: 'guildId', sourceKey: 'id'});
+    models.Guild.hasMany(models.Tier, {foreignKey: 'guildId', sourceKey: 'id'});
   };
 
   return Guild;

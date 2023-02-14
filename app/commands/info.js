@@ -1,3 +1,4 @@
+const {Op} = require('sequelize');
 const {SlashCommandBuilder, EmbedBuilder, roleMention} = require('discord.js');
 
 const logger = require('../common/logger.js').getLogger('info-command');
@@ -17,13 +18,16 @@ module.exports = {
   execute: () => {
     return async (interaction) => {
       try {
+        // Get user's from slash command.
         const discordUser = interaction.options.getUser('user');
         if (discordUser.bot) throw Error('User is a bot');
 
+        // Get user's member info from discord api.
         const member = await getGuildMember(
             interaction.guildId, discordUser.id,
         );
 
+        // Find user's current roles.
         const userRoles = (await getGuildRoles(interaction.guildId)).filter(
             (role) => member.roles.includes(role.id),
         ).map((role) => {
@@ -36,16 +40,16 @@ module.exports = {
         });
 
         if (!user) throw Error('User not in database');
-        const expToRolesMapping = user.guild.expToRolesMapping;
-        console.log(user.guild);
-        let userTier = Object.keys(expToRolesMapping);
-        userTier = userTier.filter(
-            (key) => expToRolesMapping[key] > user.experience,
-        ).reduce(
-            (acc, key) =>
-              expToRolesMapping[key] > expToRolesMapping[acc] && acc || key,
-            userTier[0],
-        );
+
+        // Find user's tier.
+        const tiers = await models.Tier.findAll({
+          where: {
+            guildId: interaction.guildId,
+            experience: {[Op.gte]: user.experience},
+          },
+          order: [['experience', 'ASC']],
+        });
+        const tier = tiers.length == 0 && 'No Tier' || roleMention(tiers[0].id);
 
         let imageUrl = '';
         if (discordUser.avatar) {
@@ -60,7 +64,7 @@ module.exports = {
             .setAuthor({name: discordUser.username, iconURL: imageUrl})
             .setThumbnail(imageUrl)
             .addFields({
-              name: 'Tier', value: `${userTier}`, inline: true,
+              name: 'Tier', value: `${tier}`, inline: true,
             }, {
               name: 'Experience', value: `${user.experience}`, inline: true,
             })
