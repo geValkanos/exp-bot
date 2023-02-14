@@ -1,6 +1,6 @@
 const {REST, Routes} = require('discord.js');
 const logger = require('./logger.js').getLogger(
-    'get-roles-discord-api',
+    'discord-api',
 );
 
 // Construct and prepare an instance of the REST module
