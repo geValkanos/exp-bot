@@ -43,7 +43,6 @@ const addGuild = () => {
 const removeGuild = () => {
   return async (guild) => {
     try {
-      // TODO: delete config.json for the guild
       logger.info(`Remove guild ${guild.id} invites bot`);
       await models.Guild.destroy({
         where: {id: guild.id},

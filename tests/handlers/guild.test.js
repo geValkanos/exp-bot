@@ -18,7 +18,8 @@ const {TestGuild} = require('../test-utils');
 
 describe('Test join/remove member to server', () => {
   const discordId1 = '123456789';
-  const testGuild1 = new TestGuild('12345');
+  const guildId = '12345';
+  const testGuild1 = new TestGuild(guildId);
 
   beforeEach(async () => {
     await testGuild1.create();
@@ -30,20 +31,20 @@ describe('Test join/remove member to server', () => {
 
   test('Add new member to server', async () => {
     await addMember()({
-      user: {id: discordId1, username: 'Test'}, guild: {id: testGuild1.id},
+      user: {id: discordId1, username: 'Test'}, guild: {id: guildId},
     });
     // Check if the user is added on db.
     const user = await models.User.findOne({
-      where: {id: discordId1, guildId: testGuild1.id},
+      where: {id: discordId1, guildId: guildId},
     });
     expect(user).not.toBeNull();
   });
 
   test('Remove member from server', async () => {
-    await removeMember()({user: {id: discordId1}, guild: {id: testGuild1.id}});
+    await removeMember()({user: {id: discordId1}, guild: {id: guildId}});
     // Check if the user is added on db.
     const user = await models.User.findOne({
-      where: {id: discordId1, guildId: testGuild1.id},
+      where: {id: discordId1, guildId: guildId},
     });
     expect(user).toBeNull();
   });
